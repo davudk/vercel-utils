@@ -12,13 +12,7 @@ export function api(handler: APIHandler<any> | APIHandlerByMethod, options?: API
                     await middleware(req, res, m);
                 }
             } catch (err) {
-                if (options.onUncaughtError) {
-                    const out = await options.onUncaughtError(err, req, res);
-                    writeOutcome(res, out ?? APIError.wrap(err));
-                } else {
-                    writeOutcome(res, APIError.wrap(err));
-                }
-
+                writeOutcome(res, await wrapUncaughtError(options, err, req, res));
                 return;
             }
         }
@@ -44,7 +38,7 @@ export function api(handler: APIHandler<any> | APIHandlerByMethod, options?: API
                     await handleUnknownError(req, err);
                 }
 
-                out = options?.onUncaughtError?.(err, req, res) ?? APIError.wrap(err);
+                out = await wrapUncaughtError(options, err, req, res);
             }
         } else if (req.method === 'OPTIONS') {
             out = EmptyOutcome;
@@ -56,6 +50,15 @@ export function api(handler: APIHandler<any> | APIHandlerByMethod, options?: API
 
 export function handler<T = any>(callback: APIHandler<T>): APIHandler<T> {
     return callback;
+}
+
+async function wrapUncaughtError(options: APIOptions | undefined, err: any, req: APIRequest, res: APIResponse): Promise<APIOutcome> {
+    if (options?.onUncaughtError) {
+        const out = await options.onUncaughtError(err, req, res);
+        if (out) return out;
+    }
+
+    return APIError.wrap(err);
 }
 
 function writeOutcome(res: APIResponse, out: APIOutcome) {
