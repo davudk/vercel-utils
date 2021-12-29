@@ -9,7 +9,8 @@ export type APIMiddleware = RequestHandler;
 
 export interface APIOptions {
     middleware?: APIMiddleware | APIMiddleware[];
-    onUncaughtError?: (err: any, req: APIRequest, res: APIResponse) => void | APIOutcome | undefined | null;
+    onUncaughtError?: (err: any, req: APIRequest, res: APIResponse) =>
+        Promise<APIOutcome | void | null | undefined>;
 }
 
 export type APIHandler<T> = (req: VercelRequest, res: VercelResponse) =>

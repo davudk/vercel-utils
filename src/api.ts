@@ -12,8 +12,13 @@ export function api(handler: APIHandler<any> | APIHandlerByMethod, options?: API
                     await middleware(req, res, m);
                 }
             } catch (err) {
-                const out = options?.onUncaughtError?.(err, req, res) ?? APIError.wrap(err);
-                writeOutcome(res, out);
+                if (options.onUncaughtError) {
+                    const out = await options.onUncaughtError(err, req, res);
+                    writeOutcome(res, out ?? APIError.wrap(err));
+                } else {
+                    writeOutcome(res, APIError.wrap(err));
+                }
+
                 return;
             }
         }
