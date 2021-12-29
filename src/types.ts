@@ -1,11 +1,15 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
+import { RequestHandler } from "express";
 
 export type API = (req: APIRequest, res: APIResponse) => void | Promise<void>;
 export type APIRequest = VercelRequest;
 export type APIResponse = VercelResponse;
 
+export type APIMiddleware = RequestHandler;
+
 export interface APIOptions {
-    onUncaughtError: (err: any, req: APIRequest, res: APIResponse) => void | APIOutcome | undefined | null;
+    middleware?: APIMiddleware | APIMiddleware[];
+    onUncaughtError?: (err: any, req: APIRequest, res: APIResponse) => void | APIOutcome | undefined | null;
 }
 
 export type APIHandler<T> = (req: VercelRequest, res: VercelResponse) =>

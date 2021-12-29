@@ -1,8 +1,23 @@
 import { VercelApiHandler } from "@vercel/node";
+import { middleware } from "./middleware";
 import { APIError, APIHandler, APIHandlerByMethod, APIOptions, APIOutcome, APIRequest, APIResponse, EmptyOutcome, MethodNotAllowedError } from './types';
 
 export function api(handler: APIHandler<any> | APIHandlerByMethod, options?: APIOptions): VercelApiHandler {
     return async (req, res) => {
+        if (options?.middleware) {
+            const { middleware: mo } = options;
+            const middlewareHandlers = Array.isArray(mo) ? mo : [mo];
+            try {
+                for (let m of middlewareHandlers) {
+                    await middleware(req, res, m);
+                }
+            } catch (err) {
+                const out = options?.onUncaughtError?.(err, req, res) ?? APIError.wrap(err);
+                writeOutcome(res, out);
+                return;
+            }
+        }
+
         let impl: APIHandler<any> | undefined = undefined;
         if (typeof handler === 'object') {
             if (req.method) {
