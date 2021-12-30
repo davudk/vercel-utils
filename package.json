@@ -1,6 +1,6 @@
 {
   "name": "@davudk/vercel-utils",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "An assorted set of utilities, usable by applications deployed to Vercel.",
   "main": "lib/cjs/index.js",
   "module": "lib/esm/index.js",

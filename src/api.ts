@@ -64,6 +64,10 @@ async function wrapUncaughtError(options: APIOptions | undefined, err: any, req:
 
 function writeOutcome(res: APIResponse, out: APIOutcome) {
     try {
+        if (out.statusCode === 0) {
+            return;
+        }
+
         res.status(out.statusCode);
 
         for (const e of Object.entries(out.headers)) {

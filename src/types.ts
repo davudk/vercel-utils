@@ -63,3 +63,4 @@ export const InvalidInputError = new APIError(422, 'invalid-input', 'Invalid inp
 export const InternalServerError = new APIError(500, 'internal-error', 'An internal error has occurred.');
 
 export const EmptyOutcome: APIOutcome<any> = new APIOutcome(200, undefined);
+export const AlreadyHandled: APIOutcome<any> = new APIOutcome(0, undefined);
