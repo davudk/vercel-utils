@@ -23,10 +23,10 @@ export function validateResponse<T>(data: any, schema: ZodSchema<T>, options?: V
     return validate(data, schema, InternalServerError);
 }
 
-export function expect<T>(data: T): T {
+export function expect<T>(data: T | null | undefined): Exclude<T, null | undefined> {
     if (data === null || typeof data === 'undefined') {
         throw NotFoundError;
     }
 
-    return data;
+    return data!;
 }
