@@ -35,11 +35,11 @@ export function api(handler: APIHandler<any> | APIHandlerByMethod, options?: API
                     out = new APIOutcome(200, out);
                 }
             } catch (err) {
-                if (!(err instanceof APIError)) {
+                if (err instanceof APIError) out = err;
+                else {
                     await handleUnknownError(req, err);
+                    out = await wrapUncaughtError(options, err, req, res);
                 }
-
-                out = await wrapUncaughtError(options, err, req, res);
             }
         } else if (req.method === 'OPTIONS') {
             out = EmptyOutcome;
